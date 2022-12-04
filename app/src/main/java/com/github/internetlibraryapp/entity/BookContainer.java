@@ -1,5 +1,7 @@
 package com.github.internetlibraryapp.entity;
 
+import androidx.lifecycle.LiveData;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
