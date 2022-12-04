@@ -1,5 +1,6 @@
 package com.github.internetlibraryapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -7,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SearchView;
@@ -32,7 +34,10 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String EXTRA_BOOK_ISBN = "EXTRA_BOOK_ISBN";
+
     private final String LOG_TAG = "MainActivity";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,9 +102,10 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    private class BookHolder extends RecyclerView.ViewHolder {
+    private class BookHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private static final String IMAGE_URL_BASE = "http://covers.openlibrary.org/b/id/";
 
+        private Book book;
         private final TextView bookTitleTextView;
         private final TextView bookAuthorTextView;
         private final TextView numberOfPagesTextView;
@@ -112,10 +118,13 @@ public class MainActivity extends AppCompatActivity {
             bookAuthorTextView = itemView.findViewById(R.id.book_author);
             numberOfPagesTextView = itemView.findViewById(R.id.number_of_pages);
             bookCover = itemView.findViewById(R.id.img_cover);
+
+            itemView.setOnClickListener(this);
         }
 
         public void bind(Book book) {
             if (book != null && checkNullOrEmpty(book.getTitle()) && book.getAuthors() != null) {
+                this.book = book;
                 bookTitleTextView.setText(book.getTitle());
                 bookAuthorTextView.setText(TextUtils.join(", ", book.getAuthors()));
                 numberOfPagesTextView.setText(book.getNumberOfPages());
@@ -132,6 +141,13 @@ public class MainActivity extends AppCompatActivity {
 
         private boolean checkNullOrEmpty(String str) {
             return !(str == null && str.isEmpty());
+        }
+
+        @Override
+        public void onClick(View view) {
+            Intent intent = new Intent(getApplicationContext(), BookDetailsActivity.class);
+            intent.putExtra(EXTRA_BOOK_ISBN, book.getIsbn().get(0));
+            startActivity(intent);
         }
     }
 
